@@ -43,12 +43,16 @@ const (
 	accountIDLength   = 12
 )
 
-func NewClients(config Config) Clients {
+func NewClients(config Config) (Clients, error) {
 	awsCfg := &aws.Config{
 		Credentials: credentials.NewStaticCredentials(config.AccessKeyID, config.AccessKeySecret, config.SessionToken),
 		Region:      aws.String(config.Region),
 	}
-	s := session.New(awsCfg)
+	s, err := session.NewSession(awsCfg)
+	if err != nil {
+		return Clients{}, microerror.Mask(err)
+	}
+
 	clients := Clients{
 		AutoScaling:    autoscaling.New(s),
 		CloudFormation: cloudformation.New(s),
@@ -60,7 +64,7 @@ func NewClients(config Config) Clients {
 		S3:             s3.New(s),
 	}
 
-	return clients
+	return clients, nil
 }
 
 func (c *Config) SetAccountID(iamClient *iam.IAM) error {
