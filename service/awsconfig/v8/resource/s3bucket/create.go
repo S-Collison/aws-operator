@@ -24,6 +24,13 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 	if bucketInput.Name != "" {
 		r.logger.LogCtx(ctx, "debug", fmt.Sprintf("creating S3 bucket %q", bucketInput.Name))
+		cred, err := r.clients.S3.Config.Credentials.Get()
+		if err != nil {
+			return microerror.Mask(err)
+		}
+		r.logger.Log("debug", fmt.Sprintf("s3 client credentials %+v", cred))
+		r.logger.Log("debug", fmt.Sprintf("s3 client clientinfo %+v", r.clients.S3.ClientInfo))
+
 		_, err = r.clients.S3.CreateBucket(&s3.CreateBucketInput{
 			Bucket: aws.String(bucketInput.Name),
 		})

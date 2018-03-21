@@ -10,7 +10,7 @@ type BucketState struct {
 }
 
 type Clients struct {
-	S3 S3Client
+	S3 *s3.S3
 }
 
 // S3Client describes the methods required to be implemented by a S3 AWS client.
