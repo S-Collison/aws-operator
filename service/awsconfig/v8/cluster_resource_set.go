@@ -2,6 +2,7 @@ package v8
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cenkalti/backoff"
 	"github.com/giantswarm/certs/legacy"
@@ -164,6 +165,8 @@ func NewClusterResourceSet(config ClusterResourceSetConfig) (*framework.Resource
 
 	var s3BucketResource framework.Resource
 	{
+		config.Logger.Log("debug", fmt.Sprintf("s3 client config %+v", config.GuestAWSClients.S3.Config))
+		config.Logger.Log("debug", fmt.Sprintf("s3 client clientinfo %+v", config.GuestAWSClients.S3.ClientInfo))
 		c := s3bucket.Config{
 			AwsService: awsService,
 			Clients: s3bucket.Clients{
