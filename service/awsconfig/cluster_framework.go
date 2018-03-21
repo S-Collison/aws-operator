@@ -172,9 +172,16 @@ func newClusterResourceRouter(config ClusterFrameworkConfig) (*framework.Resourc
 		SessionToken:    config.HostAWSConfig.SessionToken,
 		Region:          config.HostAWSConfig.Region,
 	}
-	awsClients := awsclient.NewClients(guestAWSConfig)
 
-	awsHostClients := awsclient.NewClients(hostAWSConfig)
+	awsClients, err := awsclient.NewClients(guestAWSConfig)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	awsHostClients, err := awsclient.NewClients(hostAWSConfig)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
 
 	var certWatcher *legacy.Service
 	{
