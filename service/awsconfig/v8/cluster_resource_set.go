@@ -165,7 +165,11 @@ func NewClusterResourceSet(config ClusterResourceSetConfig) (*framework.Resource
 
 	var s3BucketResource framework.Resource
 	{
-		config.Logger.Log("debug", fmt.Sprintf("s3 client config %+v", config.GuestAWSClients.S3.Config))
+		cred, err := config.GuestAWSClients.S3.Config.Credentials.Get()
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+		config.Logger.Log("debug", fmt.Sprintf("s3 client credentials %+v", cred))
 		config.Logger.Log("debug", fmt.Sprintf("s3 client clientinfo %+v", config.GuestAWSClients.S3.ClientInfo))
 		c := s3bucket.Config{
 			AwsService: awsService,
