@@ -42,7 +42,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			return microerror.Mask(err)
 		}
 
-		_, err := r.clients.S3.PutBucketTagging(&s3.PutBucketTaggingInput{
+		_, err = r.clients.S3.PutBucketTagging(&s3.PutBucketTaggingInput{
 			Bucket: aws.String(bucketInput.Name),
 			Tagging: &s3.Tagging{
 				TagSet: r.getS3BucketTags(customObject),
