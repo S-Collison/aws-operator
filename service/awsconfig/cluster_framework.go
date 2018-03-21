@@ -173,12 +173,12 @@ func newClusterResourceRouter(config ClusterFrameworkConfig) (*framework.Resourc
 		Region:          config.HostAWSConfig.Region,
 	}
 
-	awsClients, err := awsclient.NewClients(guestAWSConfig)
+	awsClients, err := awsclient.NewClientsErr(guestAWSConfig)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	awsHostClients, err := awsclient.NewClients(hostAWSConfig)
+	awsHostClients, err := awsclient.NewClientsErr(hostAWSConfig)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
