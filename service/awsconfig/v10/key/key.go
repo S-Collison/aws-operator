@@ -41,6 +41,8 @@ const (
 	PolicyNameTemplate = "EC2-K8S-Policy"
 	// LogDeliveryURI is used for setting the correct ACL in the access log bucket
 	LogDeliveryURI = "uri=http://acs.amazonaws.com/groups/s3/LogDelivery"
+	// AccessLogsExpirationDays is the default setting for the access log expiration
+	AccessLogsExpirationDays = 365
 )
 
 const (
