@@ -101,61 +101,63 @@ func WrapTestMain(c *awsclient.Client, g *framework.Guest, h *framework.Host, m 
 	var v int
 	var err error
 
+	defer func() {
+		if os.Getenv("KEEP_RESOURCES") != "true" {
+			name := "aws-operator"
+			customResource := "awsconfig"
+			logEntry := "deleted the guest cluster main stack"
+			h.DeleteGuestCluster(name, customResource, logEntry)
+
+			// only do full teardown when not on CI
+			if os.Getenv("CIRCLECI") != "true" {
+				err := teardown.Teardown(c, g, h)
+				if err != nil {
+					log.Printf("%#v\n", err)
+					v = 1
+				}
+				// TODO there should be error handling for the framework teardown.
+				h.Teardown()
+			}
+
+			err := teardown.HostPeerVPC(c, g, h)
+			if err != nil {
+				log.Printf("%#v\n", err)
+				v = 1
+			}
+		}
+
+		os.Exit(v)
+	}()
+
 	err = HostPeerVPC(c, g, h)
 	if err != nil {
 		log.Printf("%#v\n", err)
 		v = 1
+		return
 	}
 
 	err = h.Setup()
 	if err != nil {
 		log.Printf("%#v\n", err)
 		v = 1
+		return
 	}
 
 	err = Resources(c, g, h)
 	if err != nil {
 		log.Printf("%#v\n", err)
 		v = 1
+		return
 	}
 
-	if v == 0 {
-		err = g.Setup()
-		if err != nil {
-			log.Printf("%#v\n", err)
-			v = 1
-		}
+	err = g.Setup()
+	if err != nil {
+		log.Printf("%#v\n", err)
+		v = 1
+		return
 	}
 
-	if v == 0 {
-		v = m.Run()
-	}
-
-	if os.Getenv("KEEP_RESOURCES") != "true" {
-		name := "aws-operator"
-		customResource := "awsconfig"
-		logEntry := "deleted the guest cluster main stack"
-		h.DeleteGuestCluster(name, customResource, logEntry)
-
-		// only do full teardown when not on CI
-		if os.Getenv("CIRCLECI") != "true" {
-			err := teardown.Teardown(c, g, h)
-			if err != nil {
-				log.Printf("%#v\n", err)
-				v = 1
-			}
-			// TODO there should be error handling for the framework teardown.
-			h.Teardown()
-		}
-
-		err := teardown.HostPeerVPC(c, g, h)
-		if err != nil {
-			log.Printf("%#v\n", err)
-			v = 1
-		}
-	}
-
-	os.Exit(v)
+	v = m.Run()
 }
 
 func installAWSResource() error {
