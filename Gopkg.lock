@@ -266,7 +266,7 @@
   revision = "0f1af4c3bd3b0d6f445494bed71cf2cfd8de2edd"
 
 [[projects]]
-  branch = "master"
+  branch = "crd-subresources-feature-gate"
   name = "github.com/giantswarm/k8scloudconfig"
   packages = [
     "v_2_0_2",
@@ -280,7 +280,7 @@
     "v_3_2_6",
     "v_3_3_1"
   ]
-  revision = "33342c1abe8ce4ccac592b41d498808fe587d49f"
+  revision = "d0a1cc6618bbf14208a031d47577f8fd8be35d64"
 
 [[projects]]
   branch = "master"
@@ -1425,6 +1425,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3cda665ff02742c564069382e44904be4e9e2cbb024762b6dd5a43c4bf0281b1"
+  inputs-digest = "4ab8fe786c0ea24b2a406cd7849247f8538b6bc9dd79e916a667dcde2351bcfb"
   solver-name = "gps-cdcl"
   solver-version = 1
