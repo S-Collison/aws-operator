@@ -28,6 +28,9 @@ import (
 	"github.com/giantswarm/aws-operator/service/controller/v13"
 	v13adapter "github.com/giantswarm/aws-operator/service/controller/v13/adapter"
 	v13cloudconfig "github.com/giantswarm/aws-operator/service/controller/v13/cloudconfig"
+	"github.com/giantswarm/aws-operator/service/controller/v14"
+	v14adapter "github.com/giantswarm/aws-operator/service/controller/v14/adapter"
+	v14cloudconfig "github.com/giantswarm/aws-operator/service/controller/v14/cloudconfig"
 	"github.com/giantswarm/aws-operator/service/controller/v2"
 	"github.com/giantswarm/aws-operator/service/controller/v3"
 	"github.com/giantswarm/aws-operator/service/controller/v4"
@@ -70,6 +73,7 @@ type ClusterConfig struct {
 	ProjectName            string
 	PubKeyFile             string
 	Route53Enabled         bool
+	SSOPublicKey           string
 }
 
 type ClusterConfigAWSConfig struct {
@@ -704,6 +708,45 @@ func newClusterResourceRouter(config ClusterConfig) (*controller.ResourceRouter,
 		}
 	}
 
+	var resourceSetV14 *controller.ResourceSet
+	{
+		c := v14.ClusterResourceSetConfig{
+			CertsSearcher:      certWatcher,
+			G8sClient:          config.G8sClient,
+			HostAWSConfig:      hostAWSConfig,
+			HostAWSClients:     awsHostClients,
+			K8sClient:          config.K8sClient,
+			Logger:             config.Logger,
+			RandomkeysSearcher: randomKeySearcher,
+
+			AccessLogsExpiration:   config.AccessLogsExpiration,
+			AdvancedMonitoringEC2:  config.AdvancedMonitoringEC2,
+			DeleteLoggingBucket:    config.DeleteLoggingBucket,
+			GuestUpdateEnabled:     config.GuestUpdateEnabled,
+			PodInfraContainerImage: config.PodInfraContainerImage,
+			Route53Enabled:         config.Route53Enabled,
+			IncludeTags:            config.IncludeTags,
+			InstallationName:       config.InstallationName,
+			OIDC: v14cloudconfig.OIDCConfig{
+				ClientID:      config.OIDC.ClientID,
+				IssuerURL:     config.OIDC.IssuerURL,
+				UsernameClaim: config.OIDC.UsernameClaim,
+				GroupsClaim:   config.OIDC.GroupsClaim,
+			},
+			APIWhitelist: v14adapter.APIWhitelist{
+				Enabled:    config.APIWhitelist.Enabled,
+				SubnetList: config.APIWhitelist.SubnetList,
+			},
+			ProjectName:  config.ProjectName,
+			SSOPublicKey: config.SSOPublicKey,
+		}
+
+		resourceSetV14, err = v14.NewClusterResourceSet(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var resourceRouter *controller.ResourceRouter
 	{
 		c := controller.ResourceRouterConfig{
@@ -725,6 +768,7 @@ func newClusterResourceRouter(config ClusterConfig) (*controller.ResourceRouter,
 				resourceSetV11,
 				resourceSetV12,
 				resourceSetV13,
+				resourceSetV14,
 			},
 		}
 

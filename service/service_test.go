@@ -36,6 +36,7 @@ func Test_Service_New(t *testing.T) {
 				v.Set(f.Service.AWS.S3AccessLogsExpiration, 365)
 				v.Set(f.Service.AWS.Region, "myregion")
 				v.Set(f.Service.AWS.PubKeyFile, "test")
+				v.Set(f.Service.Guest.SSH.SSOPublicKey, "test")
 
 				v.Set(f.Service.Installation.Name, "test")
 				v.Set(f.Service.AWS.LoggingBucket.Delete, true)
