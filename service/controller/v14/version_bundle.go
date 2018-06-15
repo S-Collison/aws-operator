@@ -9,8 +9,8 @@ func VersionBundle() versionbundle.Bundle {
 		Changelogs: []versionbundle.Changelog{
 			{
 				Component:   "aws-operator",
-				Description: "Updated EC2 and S3 endpoints for supporting AWS China regions.",
-				Kind:        versionbundle.KindChanged,
+				Description: "Added CA public key into trusted user keys for SSO ssh.",
+				Kind:        versionbundle.KindAdded,
 			},
 		},
 		Components: []versionbundle.Component{
@@ -44,6 +44,6 @@ func VersionBundle() versionbundle.Bundle {
 			},
 		},
 		Name:    "aws-operator",
-		Version: "3.1.3",
+		Version: "3.2.0",
 	}
 }
