@@ -40,12 +40,6 @@ spec:
           items:
           - key: id_rsa.pub
             path: id_rsa.pub
-      - name: sso-ssh-key
-        secret:
-          secretName: aws-operator-sso-ssh-key-secret
-          items:
-          - key: trusted-user-ca-keys.pem
-            path: trusted-user-ca-keys.pem
       serviceAccountName: aws-operator
       containers:
       - name: aws-operator
@@ -60,9 +54,6 @@ spec:
           mountPath: /etc/ssl/certs/ca-certificates.crt
         - name: ssh-key
           mountPath: /.ssh/
-          readOnly: true
-        - name: sso-ssh-key
-          mountPath: /etc/ssh/
           readOnly: true
         ports:
         - name: http
