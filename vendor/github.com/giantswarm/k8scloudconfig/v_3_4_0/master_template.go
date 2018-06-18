@@ -916,7 +916,7 @@ write_files:
       kind: ClusterRole
       name: calico-node
       apiGroup: rbac.authorization.k8s.io
-{{ if not .DisableIngressController -}}
+{{- if not .DisableIngressController }}
     ---
     ## IC
     kind: ClusterRoleBinding
@@ -981,7 +981,7 @@ write_files:
           - nodes
         verbs:
           - get
-{{ if not .DisableIngressController -}}
+{{- if not .DisableIngressController }}
     ---
     ## IC
     apiVersion: v1
