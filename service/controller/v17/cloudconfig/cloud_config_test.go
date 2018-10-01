@@ -55,38 +55,47 @@ func Test_Service_CloudConfig_NewMasterTemplate(t *testing.T) {
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-
 		decoded, err := testDecodeTemplate(template)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
+		decodedBytes := []byte(decoded)
+		_, err = ignition.ConvertTemplatetoJSON(decodedBytes)
+		if err != nil {
+			t.Fatalf("expected %#v got %#v", nil, err)
+		}
+
+		calicoClientCA := []byte(tc.Certs.CalicoClientCA)
 		t.Run("VerifyAPIServerCA", func(t *testing.T) {
-			if !strings.Contains(decoded, tc.Certs.CalicoClientCA) {
+			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientCA)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client CA", "none")
 			}
 		})
 
+		calicoClientCrt := []byte(tc.Certs.CalicoClientCrt)
 		t.Run("VerifyAPIServerCrt", func(t *testing.T) {
-			if !strings.Contains(decoded, tc.Certs.CalicoClientCrt) {
+			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientCrt)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client Crt", "none")
 			}
 		})
 
+		calicoClientKey := []byte(tc.Certs.CalicoClientKey)
 		t.Run("VerifyAPIServerKey", func(t *testing.T) {
-			if !strings.Contains(decoded, tc.Certs.CalicoClientKey) {
+			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientKey)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client Key", "none")
 			}
 		})
 
 		t.Run("VerifyTLSAssetsDecryptionUnit", func(t *testing.T) {
-			if !strings.Contains(decoded, "- name: decrypt-tls-assets.service") {
+			if !strings.Contains(decoded, "decrypt-tls-assets.service") {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain unit decrypt-tls-assets.service", "none")
 			}
 		})
 
+		serverEncryptionKey := []byte("H4sIAAAAAAAA/1SNMQ7CMAxF957CF+jQNSviCuwldYgVYTd2aBQh7o4CVREeLL33pf8T8eLgzF7bWkj4JBzoNswrXVCNhB1s06Bo8lCP5gaAEf6wC0OvWOxDq8pGC+oRzmj+6r/UL2GzH43A8x1dt9MhYW90EDDFQFUoR6EQa8YglGv/KceKYR+hBblQaQ6er3cAAAD//9QjGEbUAAAA")
 		t.Run("VerifyAPIServerEncryptionKey", func(t *testing.T) {
-			if !strings.Contains(decoded, "H4sIAAAAAAAA/1SNMQ7CMAxF957CF+jQNSviCuwldYgVYTd2aBQh7o4CVREeLL33pf8T8eLgzF7bWkj4JBzoNswrXVCNhB1s06Bo8lCP5gaAEf6wC0OvWOxDq8pGC+oRzmj+6r/UL2GzH43A8x1dt9MhYW90EDDFQFUoR6EQa8YglGv/KceKYR+hBblQaQ6er3cAAAD//9QjGEbUAAAA") {
+			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(serverEncryptionKey)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain apiserver encryption config", "wrong config output")
 			}
 		})
@@ -134,33 +143,30 @@ func Test_Service_CloudConfig_NewWorkerTemplate(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
+		calicoClientCA := []byte(tc.Certs.CalicoClientCA)
 		t.Run("VerifyAPIServerCA", func(t *testing.T) {
-			if !strings.Contains(decoded, tc.Certs.CalicoClientCA) {
+			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientCA)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client CA", "none")
 			}
 		})
 
+		calicoClientCrt := []byte(tc.Certs.CalicoClientCrt)
 		t.Run("VerifyAPIServerCrt", func(t *testing.T) {
-			if !strings.Contains(decoded, tc.Certs.CalicoClientCrt) {
+			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientCrt)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client Crt", "none")
 			}
 		})
 
+		calicoClientKey := []byte(tc.Certs.CalicoClientKey)
 		t.Run("VerifyAPIServerKey", func(t *testing.T) {
-			if !strings.Contains(decoded, tc.Certs.CalicoClientKey) {
+			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientKey)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client Key", "none")
 			}
 		})
 
 		t.Run("VerifyTLSAssetsDecryptionUnit", func(t *testing.T) {
-			if !strings.Contains(decoded, "- name: decrypt-tls-assets.service") {
+			if !strings.Contains(decoded, "decrypt-tls-assets.service") {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain unit decrypt-tls-assets.service", "none")
-			}
-		})
-
-		t.Run("VerifyAWSRegion", func(t *testing.T) {
-			if !strings.Contains(decoded, "--region 123456789-super-magic-aws-region kms decrypt") {
-				t.Fatalf("expected %#v got %#v", "cloud config to contain AWS region", "none")
 			}
 		})
 	}
@@ -186,13 +192,18 @@ func testDecodeTemplate(template string) (string, error) {
 }
 
 func testNewCloudConfigService() (*CloudConfig, error) {
-	var err error
-
 	var ccService *CloudConfig
 	{
+		packagePath, err := k8scloudconfig.GetPackagePath()
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+		ignitionPath := k8scloudconfig.GetIgnitionPath(packagePath)
+
 		c := Config{
 			Encrypter:      &encrypter.EncrypterMock{},
 			Logger:         microloggertest.New(),
+			IgnitionPath:   ignitionPath,
 			RegistryDomain: "quay.io",
 		}
 

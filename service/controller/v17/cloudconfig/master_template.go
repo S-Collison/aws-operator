@@ -52,6 +52,11 @@ func (c *CloudConfig) NewMasterTemplate(ctx context.Context, customObject v1alph
 		params.Hyperkube.Kubelet.Docker.CommandExtraArgs = c.k8sKubeletExtraArgs
 		params.RegistryDomain = c.registryDomain
 		params.SSOPublicKey = c.SSOPublicKey
+
+		params.Files, err = k8scloudconfig.RenderFiles(c.ignitionPath, params)
+		if err != nil {
+			return "", microerror.Mask(err)
+		}
 	}
 
 	var newCloudConfig *k8scloudconfig.CloudConfig
@@ -88,160 +93,243 @@ type MasterExtension struct {
 }
 
 func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
+	var storageClass string
+	_, ok := e.encrypter.(*vault.Encrypter)
+	if ok {
+		storageClass = cloudconfig.InstanceStorageClassContent
+	} else {
+		storageClass = cloudconfig.InstanceStorageClassEncryptedContent
+	}
+
 	filesMeta := []k8scloudconfig.FileMetadata{
 		{
 			AssetContent: cloudconfig.DecryptTLSAssetsScript,
 			Path:         "/opt/bin/decrypt-tls-assets",
-			Owner:        FileOwner,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.APIServerCrt,
 			Path:         "/etc/kubernetes/ssl/apiserver-crt.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.APIServerCA,
 			Path:         "/etc/kubernetes/ssl/apiserver-ca.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.APIServerKey,
 			Path:         "/etc/kubernetes/ssl/apiserver-key.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.ServiceAccountCrt,
 			Path:         "/etc/kubernetes/ssl/service-account-crt.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.ServiceAccountCA,
 			Path:         "/etc/kubernetes/ssl/service-account-ca.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.ServiceAccountKey,
 			Path:         "/etc/kubernetes/ssl/service-account-key.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.CalicoClientCrt,
 			Path:         "/etc/kubernetes/ssl/calico/client-crt.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.CalicoClientCA,
 			Path:         "/etc/kubernetes/ssl/calico/client-ca.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.CalicoClientKey,
 			Path:         "/etc/kubernetes/ssl/calico/client-key.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.EtcdServerCrt,
 			Path:         "/etc/kubernetes/ssl/etcd/server-crt.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.EtcdServerCA,
 			Path:         "/etc/kubernetes/ssl/etcd/server-ca.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.EtcdServerKey,
 			Path:         "/etc/kubernetes/ssl/etcd/server-key.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		// Add second copy of files for etcd client certs. Will be replaced by
 		// a separate client cert.
 		{
 			AssetContent: e.certs.EtcdServerCrt,
 			Path:         "/etc/kubernetes/ssl/etcd/client-crt.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.EtcdServerCA,
 			Path:         "/etc/kubernetes/ssl/etcd/client-ca.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.certs.EtcdServerKey,
 			Path:         "/etc/kubernetes/ssl/etcd/client-key.pem.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: e.RandomKeyTmplSet.APIServerEncryptionKey,
 			Path:         "/etc/kubernetes/encryption/k8s-encryption-config.yaml.enc",
-			Owner:        FileOwner,
-			Encoding:     GzipBase64Encoding,
-			Permissions:  0644,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Compression: true,
+			Permissions: 0644,
 		},
 		{
 			AssetContent: cloudconfig.WaitDockerConf,
 			Path:         "/etc/systemd/system/docker.service.d/01-wait-docker.conf",
-			Owner:        FileOwner,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Permissions: FilePermission,
 		},
 		{
 			AssetContent: cloudconfig.DecryptKeysAssetsScript,
 			Path:         "/opt/bin/decrypt-keys-assets",
-			Owner:        FileOwner,
-			Permissions:  FilePermission,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Permissions: FilePermission,
 		},
 		// Add use-proxy-protocol to ingress-controller ConfigMap, this doesn't work
 		// on KVM because of dependencies on hardware LB configuration.
 		{
 			AssetContent: cloudconfig.IngressControllerConfigMap,
 			Path:         "/srv/ingress-controller-cm.yml",
-			Owner:        FileOwner,
-			Permissions:  0644,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Permissions: 0644,
 		},
 		// NVME disks udev rules and script.
 		// Workaround for https://github.com/coreos/bugs/issues/2399
 		{
 			AssetContent: cloudconfig.NVMEUdevRule,
 			Path:         "/etc/udev/rules.d/10-ebs-nvme-mapping.rules",
-			Owner:        FileOwner,
-			Permissions:  0644,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Permissions: 0644,
 		},
 		{
 			AssetContent: cloudconfig.NVMEUdevScript,
 			Path:         "/opt/ebs-nvme-mapping",
-			Owner:        FileOwner,
-			Permissions:  0766,
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Permissions: 0766,
+		},
+		{
+			AssetContent: storageClass,
+			Path:         "/srv/default-storage-class.yaml",
+			Owner: k8scloudconfig.Owner{
+				User:  FileOwnerUser,
+				Group: FileOwnerGroup,
+			},
+			Permissions: 0644,
 		},
 	}
 
@@ -249,7 +337,7 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 
 	for _, fm := range filesMeta {
 		data := e.templateData()
-		c, err := k8scloudconfig.RenderAssetContent(fm.AssetContent, data)
+		c, err := k8scloudconfig.RenderFileAssetContent(fm.AssetContent, data)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -272,8 +360,7 @@ func (e *MasterExtension) Units() ([]k8scloudconfig.UnitAsset, error) {
 		{
 			AssetContent: cloudconfig.NVMEUdevTriggerUnit,
 			Name:         "ebs-nvme-udev-trigger.service",
-			Enable:       false,
-			Command:      "start",
+			Enabled:      false,
 		},
 		// Set bigger timeouts for NVME driver.
 		// Workaround for https://github.com/coreos/bugs/issues/2484
@@ -281,8 +368,7 @@ func (e *MasterExtension) Units() ([]k8scloudconfig.UnitAsset, error) {
 		{
 			AssetContent: cloudconfig.NVMESetTimeoutsUnit,
 			Name:         "nvme-set-timeouts.service",
-			Enable:       true,
-			Command:      "start",
+			Enabled:      true,
 		},
 		{
 			AssetContent: cloudconfig.DecryptTLSAssetsService,
@@ -290,20 +376,17 @@ func (e *MasterExtension) Units() ([]k8scloudconfig.UnitAsset, error) {
 			// Do not enable TLS assets decrypt unit so that it won't get automatically
 			// executed on master reboot. This will prevent eventual races with the
 			// asset files creation.
-			Enable:  false,
-			Command: "start",
+			Enabled: false,
 		},
 		{
 			AssetContent: cloudconfig.MasterFormatVarLibDockerService,
 			Name:         "format-var-lib-docker.service",
-			Enable:       true,
-			Command:      "start",
+			Enabled:      true,
 		},
 		{
 			AssetContent: cloudconfig.EphemeralVarLibDockerMount,
 			Name:         "var-lib-docker.mount",
-			Enable:       true,
-			Command:      "start",
+			Enabled:      true,
 		},
 		{
 			AssetContent: cloudconfig.DecryptKeysAssetsService,
@@ -311,22 +394,19 @@ func (e *MasterExtension) Units() ([]k8scloudconfig.UnitAsset, error) {
 			// Do not enable key decrypt unit so that it won't get automatically
 			// executed on master reboot. This will prevent eventual races with the
 			// key files creation.
-			Enable:  false,
-			Command: "start",
+			Enabled: false,
 		},
 		// Format etcd EBS volume.
 		{
 			AssetContent: cloudconfig.FormatEtcdVolume,
 			Name:         "format-etcd-ebs.service",
-			Enable:       true,
-			Command:      "start",
+			Enabled:      true,
 		},
 		// Mount etcd EBS volume.
 		{
 			AssetContent: cloudconfig.MountEtcdVolume,
 			Name:         "var-lib-etcd.mount",
-			Enable:       true,
-			Command:      "start",
+			Enabled:      true,
 		},
 	}
 
@@ -350,22 +430,11 @@ func (e *MasterExtension) Units() ([]k8scloudconfig.UnitAsset, error) {
 }
 
 func (e *MasterExtension) VerbatimSections() []k8scloudconfig.VerbatimSection {
-	var storageClasss string
-	_, ok := e.encrypter.(*vault.Encrypter)
-	if ok {
-		storageClasss = cloudconfig.InstanceStorageClass
-	} else {
-		storageClasss = cloudconfig.InstanceStorageClassEncrypted
-	}
 
 	newSections := []k8scloudconfig.VerbatimSection{
 		{
 			Name:    "storage",
 			Content: cloudconfig.InstanceStorage,
-		},
-		{
-			Name:    "storageclass",
-			Content: storageClasss,
 		},
 	}
 	return newSections
