@@ -118,15 +118,14 @@ func mainError() error {
 	daemonCommand.PersistentFlags().String(f.Service.AWS.PublicRouteTables, "", "Names of the public route tables in host cluster separated by commas, required for accessing public ELBs from guest nodes.")
 	daemonCommand.PersistentFlags().String(f.Service.AWS.Region, "", "Region for checking for orphan AWS resources.")
 	daemonCommand.PersistentFlags().String(f.Service.AWS.VaultAddress, "", "Server address for Vault encryption.")
-
 	daemonCommand.PersistentFlags().String(f.Service.RegistryDomain, "quay.io", "Image registry.")
 
 	// TODO(nhlfr): Deprecate these options when cert-operator will be implemented.
 	daemonCommand.PersistentFlags().String(f.Service.AWS.PubKeyFile, path.Join(string(os.PathSeparator), ".ssh", "id_rsa.pub"), "Public key to be imported as a keypair in AWS.")
 
-	daemonCommand.PersistentFlags().Bool(f.Service.Guest.Update.Enabled, false, "Whether updates of guest cluster nodes are allowed to be processed upon reconciliation.")
-
+	daemonCommand.PersistentFlags().String(f.Service.Guest.Ignition.IgnitionPath, "/opt/ignition", "Default path for the ignition base directory.")
 	daemonCommand.PersistentFlags().String(f.Service.Guest.SSH.SSOPublicKey, "", "Public key for trusted SSO CA.")
+	daemonCommand.PersistentFlags().Bool(f.Service.Guest.Update.Enabled, false, "Whether updates of guest cluster nodes are allowed to be processed upon reconciliation.")
 
 	daemonCommand.PersistentFlags().Bool(f.Service.AWS.LoggingBucket.Delete, false, "Should be logging bucket deleted.")
 
