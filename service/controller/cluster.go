@@ -911,7 +911,6 @@ func newClusterResourceSets(config ClusterConfig) ([]*controller.ResourceSet, er
 			GuestUpdateEnabled:     config.GuestUpdateEnabled,
 			PodInfraContainerImage: config.PodInfraContainerImage,
 			Route53Enabled:         config.Route53Enabled,
-			IgnitionPath:           config.IgnitionPath,
 			IncludeTags:            config.IncludeTags,
 			InstallationName:       config.InstallationName,
 			OIDC: v17cloudconfig.OIDCConfig{
@@ -955,6 +954,7 @@ func newClusterResourceSets(config ClusterConfig) ([]*controller.ResourceSet, er
 			GuestUpdateEnabled:     config.GuestUpdateEnabled,
 			PodInfraContainerImage: config.PodInfraContainerImage,
 			Route53Enabled:         config.Route53Enabled,
+			IgnitionPath:           config.IgnitionPath,
 			IncludeTags:            config.IncludeTags,
 			InstallationName:       config.InstallationName,
 			OIDC: v18cloudconfig.OIDCConfig{
