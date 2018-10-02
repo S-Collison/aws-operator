@@ -7,6 +7,5 @@ storage:
       mount:
         device: /dev/xvdb
         format: xfs
-        create:
-          force: true
+        wipeFilesystem: true
 `

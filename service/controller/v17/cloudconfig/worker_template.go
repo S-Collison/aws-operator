@@ -37,11 +37,6 @@ func (c *CloudConfig) NewWorkerTemplate(ctx context.Context, customObject v1alph
 		params.Hyperkube.Kubelet.Docker.CommandExtraArgs = c.k8sKubeletExtraArgs
 		params.RegistryDomain = c.registryDomain
 		params.SSOPublicKey = c.SSOPublicKey
-
-		params.Files, err = k8scloudconfig.RenderFiles(c.ignitionPath, params)
-		if err != nil {
-			return "", microerror.Mask(err)
-		}
 	}
 
 	var newCloudConfig *k8scloudconfig.CloudConfig
@@ -74,119 +69,77 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 		{
 			AssetContent: cloudconfig.DecryptTLSAssetsScript,
 			Path:         "/opt/bin/decrypt-tls-assets",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Permissions: 0700,
+			Owner:        "root:root",
+			Permissions:  0700,
 		},
 		{
 			AssetContent: e.certs.WorkerCrt,
 			Path:         "/etc/kubernetes/ssl/worker-crt.pem.enc",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Compression: true,
-			Permissions: 0700,
+			Owner:        "root:root",
+			Encoding:     GzipBase64Encoding,
+			Permissions:  0700,
 		},
 		{
 			AssetContent: e.certs.WorkerCA,
 			Path:         "/etc/kubernetes/ssl/worker-ca.pem.enc",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Compression: true,
-			Permissions: 0700,
+			Owner:        "root:root",
+			Encoding:     GzipBase64Encoding,
+			Permissions:  0700,
 		},
 		{
 			AssetContent: e.certs.WorkerKey,
 			Path:         "/etc/kubernetes/ssl/worker-key.pem.enc",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Compression: true,
-			Permissions: 0700,
+			Owner:        "root:root",
+			Encoding:     GzipBase64Encoding,
+			Permissions:  0700,
 		},
 		{
 			AssetContent: e.certs.CalicoClientCrt,
 			Path:         "/etc/kubernetes/ssl/calico/client-crt.pem.enc",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Compression: true,
-			Permissions: 0700,
+			Owner:        "root:root",
+			Encoding:     GzipBase64Encoding,
+			Permissions:  0700,
 		},
 		{
 			AssetContent: e.certs.CalicoClientCA,
 			Path:         "/etc/kubernetes/ssl/calico/client-ca.pem.enc",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Compression: true,
-			Permissions: 0700,
+			Owner:        "root:root",
+			Encoding:     GzipBase64Encoding,
+			Permissions:  0700,
 		},
 		{
 			AssetContent: e.certs.CalicoClientKey,
 			Path:         "/etc/kubernetes/ssl/calico/client-key.pem.enc",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Compression: true,
-			Permissions: 0700,
+			Owner:        "root:root",
+			Encoding:     GzipBase64Encoding,
+			Permissions:  0700,
 		},
 		{
 			AssetContent: e.certs.EtcdServerCrt,
 			Path:         "/etc/kubernetes/ssl/etcd/client-crt.pem.enc",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Compression: true,
-			Permissions: 0700,
+			Owner:        "root:root",
+			Encoding:     GzipBase64Encoding,
+			Permissions:  0700,
 		},
 		{
 			AssetContent: e.certs.EtcdServerCA,
 			Path:         "/etc/kubernetes/ssl/etcd/client-ca.pem.enc",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Compression: true,
-			Permissions: 0700,
+			Owner:        "root:root",
+			Encoding:     GzipBase64Encoding,
+			Permissions:  0700,
 		},
 		{
 			AssetContent: e.certs.EtcdServerKey,
 			Path:         "/etc/kubernetes/ssl/etcd/client-key.pem.enc",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Compression: true,
-			Permissions: 0700,
+			Owner:        "root:root",
+			Encoding:     GzipBase64Encoding,
+			Permissions:  0700,
 		},
 		{
 			AssetContent: cloudconfig.WaitDockerConf,
 			Path:         "/etc/systemd/system/docker.service.d/01-wait-docker.conf",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Permissions: 0700,
-		},
-		{
-			AssetContent: cloudconfig.InstanceStorageClassContent,
-			Path:         "/srv/default-storage-class.yaml",
-			Owner: k8scloudconfig.Owner{
-				User:  FileOwnerUser,
-				Group: FileOwnerGroup,
-			},
-			Permissions: 0644,
+			Owner:        "root:root",
+			Permissions:  0700,
 		},
 	}
 
@@ -194,7 +147,7 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 
 	for _, m := range filesMeta {
 		data := e.templateData()
-		c, err := k8scloudconfig.RenderFileAssetContent(m.AssetContent, data)
+		c, err := k8scloudconfig.RenderAssetContent(m.AssetContent, data)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -215,17 +168,20 @@ func (e *WorkerExtension) Units() ([]k8scloudconfig.UnitAsset, error) {
 		{
 			AssetContent: cloudconfig.DecryptTLSAssetsService,
 			Name:         "decrypt-tls-assets.service",
-			Enabled:      false,
+			Enable:       false,
+			Command:      "start",
 		},
 		{
 			AssetContent: cloudconfig.WorkerFormatVarLibDockerService,
 			Name:         "format-var-lib-docker.service",
-			Enabled:      true,
+			Enable:       true,
+			Command:      "start",
 		},
 		{
 			AssetContent: cloudconfig.PersistentVarLibDockerMount,
 			Name:         "var-lib-docker.mount",
-			Enabled:      true,
+			Enable:       true,
+			Command:      "start",
 		},
 		// Set bigger timeouts for NVME driver.
 		// Workaround for https://github.com/coreos/bugs/issues/2484
@@ -233,7 +189,8 @@ func (e *WorkerExtension) Units() ([]k8scloudconfig.UnitAsset, error) {
 		{
 			AssetContent: cloudconfig.NVMESetTimeoutsUnit,
 			Name:         "nvme-set-timeouts.service",
-			Enabled:      true,
+			Enable:       true,
+			Command:      "start",
 		},
 	}
 
@@ -257,7 +214,12 @@ func (e *WorkerExtension) Units() ([]k8scloudconfig.UnitAsset, error) {
 }
 
 func (e *WorkerExtension) VerbatimSections() []k8scloudconfig.VerbatimSection {
-	newSections := []k8scloudconfig.VerbatimSection{}
+	newSections := []k8scloudconfig.VerbatimSection{
+		{
+			Name:    "storageclass",
+			Content: cloudconfig.InstanceStorageClass,
+		},
+	}
 
 	return newSections
 }

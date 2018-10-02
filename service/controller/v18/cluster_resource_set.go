@@ -58,6 +58,7 @@ type ClusterResourceSetConfig struct {
 	APIWhitelist           adapter.APIWhitelist
 	EncrypterBackend       string
 	GuestUpdateEnabled     bool
+	IgnitionPath           string
 	IncludeTags            bool
 	InstallationName       string
 	DeleteLoggingBucket    bool
@@ -112,6 +113,10 @@ func NewClusterResourceSet(config ClusterResourceSetConfig) (*controller.Resourc
 		return nil, microerror.Maskf(invalidConfigError, "%T.RandomkeysSearcher must not be empty", config)
 	}
 
+	if config.IgnitionPath == "" {
+		return nil, microerror.Maskf(invalidConfigError, "%T.IgnitionPath must not be empty", config)
+	}
+
 	if config.InstallationName == "" {
 		return nil, microerror.Maskf(invalidConfigError, "%T.InstallationName must not be empty", config)
 	}
@@ -161,7 +166,8 @@ func NewClusterResourceSet(config ClusterResourceSetConfig) (*controller.Resourc
 			Encrypter: encrypterObject,
 			Logger:    config.Logger,
 
-			OIDC: config.OIDC,
+			IgnitionPath: config.IgnitionPath,
+			OIDC:         config.OIDC,
 			PodInfraContainerImage: config.PodInfraContainerImage,
 			RegistryDomain:         config.RegistryDomain,
 			SSOPublicKey:           config.SSOPublicKey,
