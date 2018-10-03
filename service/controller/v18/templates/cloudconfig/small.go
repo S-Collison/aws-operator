@@ -38,6 +38,6 @@ done
     --volume=awsenv,kind=host,source=/var/run/coreos,readOnly=false --mount volume=awsenv,target=/var/run/coreos \
     --trust-keys-from-https \
     --insecure-options=image \
-    {{ .Registry }} -- aws s3 --region {{.Region}} cp {{.S3URL}} /var/run/coreos/temp.txt
-base64 -d /var/run/coreos/temp.txt | gunzip > /var/run/coreos/{{.Role}}
-exec /usr/bin/coreos-cloudinit --from-file /var/run/coreos/{{.Role}}`
+    {{ .Registry }} -- aws s3 --region {{.Region}} cp {{.S3URL}} /var/run/coreos/temp.json
+base64 -d /var/run/coreos/temp.json | gunzip > /var/run/coreos/{{.Role}}.json
+exec /usr/bin/coreos-install -i /var/run/coreos/{{.Role}}.json`
