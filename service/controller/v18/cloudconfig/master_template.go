@@ -77,7 +77,7 @@ func (c *CloudConfig) NewMasterTemplate(ctx context.Context, customObject v1alph
 		}
 	}
 
-	return newCloudConfig.Base64(), nil
+	return newCloudConfig.String(), nil
 }
 
 // RandomKeyTmplSet holds a collection of rendered templates for random key

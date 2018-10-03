@@ -60,7 +60,7 @@ func (c *CloudConfig) NewWorkerTemplate(ctx context.Context, customObject v1alph
 		}
 	}
 
-	return newCloudConfig.Base64(), nil
+	return newCloudConfig.String(), nil
 }
 
 type WorkerExtension struct {

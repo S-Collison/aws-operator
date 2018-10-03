@@ -1,11 +1,8 @@
 package cloudconfig
 
 import (
-	"bytes"
-	"compress/gzip"
 	"context"
 	"encoding/base64"
-	"io"
 	"strings"
 	"testing"
 
@@ -58,47 +55,43 @@ func Test_Service_CloudConfig_NewMasterTemplate(t *testing.T) {
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		decoded, err := testDecodeTemplate(template)
-		if err != nil {
-			t.Fatalf("expected %#v got %#v", nil, err)
-		}
 
-		decodedBytes := []byte(decoded)
-		_, err = ignition.ConvertTemplatetoJSON(decodedBytes)
+		templateBytes := []byte(template)
+		_, err = ignition.ConvertTemplatetoJSON(templateBytes)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
 		calicoClientCA := []byte(tc.Certs.CalicoClientCA)
 		t.Run("VerifyAPIServerCA", func(t *testing.T) {
-			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientCA)) {
+			if !strings.Contains(template, base64.StdEncoding.EncodeToString(calicoClientCA)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client CA", "none")
 			}
 		})
 
 		calicoClientCrt := []byte(tc.Certs.CalicoClientCrt)
 		t.Run("VerifyAPIServerCrt", func(t *testing.T) {
-			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientCrt)) {
+			if !strings.Contains(template, base64.StdEncoding.EncodeToString(calicoClientCrt)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client Crt", "none")
 			}
 		})
 
 		calicoClientKey := []byte(tc.Certs.CalicoClientKey)
 		t.Run("VerifyAPIServerKey", func(t *testing.T) {
-			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientKey)) {
+			if !strings.Contains(template, base64.StdEncoding.EncodeToString(calicoClientKey)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client Key", "none")
 			}
 		})
 
 		t.Run("VerifyTLSAssetsDecryptionUnit", func(t *testing.T) {
-			if !strings.Contains(decoded, "decrypt-tls-assets.service") {
+			if !strings.Contains(template, "decrypt-tls-assets.service") {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain unit decrypt-tls-assets.service", "none")
 			}
 		})
 
 		serverEncryptionKey := []byte("H4sIAAAAAAAA/1SNMQ7CMAxF957CF+jQNSviCuwldYgVYTd2aBQh7o4CVREeLL33pf8T8eLgzF7bWkj4JBzoNswrXVCNhB1s06Bo8lCP5gaAEf6wC0OvWOxDq8pGC+oRzmj+6r/UL2GzH43A8x1dt9MhYW90EDDFQFUoR6EQa8YglGv/KceKYR+hBblQaQ6er3cAAAD//9QjGEbUAAAA")
 		t.Run("VerifyAPIServerEncryptionKey", func(t *testing.T) {
-			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(serverEncryptionKey)) {
+			if !strings.Contains(template, base64.StdEncoding.EncodeToString(serverEncryptionKey)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain apiserver encryption config", "wrong config output")
 			}
 		})
@@ -141,57 +134,33 @@ func Test_Service_CloudConfig_NewWorkerTemplate(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		decoded, err := testDecodeTemplate(template)
-		if err != nil {
-			t.Fatalf("expected %#v got %#v", nil, err)
-		}
-
 		calicoClientCA := []byte(tc.Certs.CalicoClientCA)
 		t.Run("VerifyAPIServerCA", func(t *testing.T) {
-			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientCA)) {
+			if !strings.Contains(template, base64.StdEncoding.EncodeToString(calicoClientCA)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client CA", "none")
 			}
 		})
 
 		calicoClientCrt := []byte(tc.Certs.CalicoClientCrt)
 		t.Run("VerifyAPIServerCrt", func(t *testing.T) {
-			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientCrt)) {
+			if !strings.Contains(template, base64.StdEncoding.EncodeToString(calicoClientCrt)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client Crt", "none")
 			}
 		})
 
 		calicoClientKey := []byte(tc.Certs.CalicoClientKey)
 		t.Run("VerifyAPIServerKey", func(t *testing.T) {
-			if !strings.Contains(decoded, base64.StdEncoding.EncodeToString(calicoClientKey)) {
+			if !strings.Contains(template, base64.StdEncoding.EncodeToString(calicoClientKey)) {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain Calico client Key", "none")
 			}
 		})
 
 		t.Run("VerifyTLSAssetsDecryptionUnit", func(t *testing.T) {
-			if !strings.Contains(decoded, "decrypt-tls-assets.service") {
+			if !strings.Contains(template, "decrypt-tls-assets.service") {
 				t.Fatalf("expected %#v got %#v", "cloud config to contain unit decrypt-tls-assets.service", "none")
 			}
 		})
 	}
-}
-
-func testDecodeTemplate(template string) (string, error) {
-	decoded, err := base64.StdEncoding.DecodeString(template)
-	if err != nil {
-		return "", err
-	}
-	r, err := gzip.NewReader(bytes.NewReader(decoded))
-	if err != nil {
-		return "", err
-	}
-	var b bytes.Buffer
-	_, err = io.Copy(&b, r)
-	if err != nil {
-		return "", err
-	}
-	r.Close()
-
-	return b.String(), nil
 }
 
 func testNewCloudConfigService() (*CloudConfig, error) {

@@ -5,7 +5,7 @@ const Small = `{
     "version": "2.2.0",
     "config": {
       "replace": {
-        "source": "{{ .S3HTTPURL }}"
+        "source": "{{ .S3URL }}"
       }
     }
   }
