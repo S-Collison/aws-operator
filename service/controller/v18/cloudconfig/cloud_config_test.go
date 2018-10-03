@@ -201,12 +201,11 @@ func testNewCloudConfigService() (*CloudConfig, error) {
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
-		ignitionPath := k8scloudconfig.GetIgnitionPath(packagePath)
 
 		c := Config{
 			Encrypter:      &encrypter.EncrypterMock{},
 			Logger:         microloggertest.New(),
-			IgnitionPath:   ignitionPath,
+			IgnitionPath:   packagePath,
 			RegistryDomain: "quay.io",
 		}
 
