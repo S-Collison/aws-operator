@@ -416,11 +416,6 @@ func (e *MasterExtension) Units() ([]k8scloudconfig.UnitAsset, error) {
 
 func (e *MasterExtension) VerbatimSections() []k8scloudconfig.VerbatimSection {
 
-	newSections := []k8scloudconfig.VerbatimSection{
-		{
-			Name:    "storage",
-			Content: cloudconfig.InstanceStorage,
-		},
-	}
+	newSections := []k8scloudconfig.VerbatimSection{}
 	return newSections
 }
