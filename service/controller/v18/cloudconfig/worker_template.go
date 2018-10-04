@@ -86,7 +86,6 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0700,
 		},
 		{
@@ -96,7 +95,6 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0700,
 		},
 		{
@@ -106,7 +104,6 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0700,
 		},
 		{
@@ -116,7 +113,6 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0700,
 		},
 		{
@@ -126,7 +122,6 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0700,
 		},
 		{
@@ -136,7 +131,6 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0700,
 		},
 		{
@@ -146,7 +140,6 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0700,
 		},
 		{
@@ -156,7 +149,6 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0700,
 		},
 		{
@@ -166,7 +158,6 @@ func (e *WorkerExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0700,
 		},
 		{

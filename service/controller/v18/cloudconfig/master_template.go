@@ -119,7 +119,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -129,7 +128,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -139,7 +137,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -149,7 +146,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -159,7 +155,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -169,7 +164,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -179,7 +173,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -189,7 +182,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -199,7 +191,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -209,7 +200,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -219,7 +209,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -229,7 +218,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		// Add second copy of files for etcd client certs. Will be replaced by
@@ -241,7 +229,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -251,7 +238,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -261,7 +247,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: FilePermission,
 		},
 		{
@@ -271,7 +256,6 @@ func (e *MasterExtension) Files() ([]k8scloudconfig.FileAsset, error) {
 				User:  FileOwnerUser,
 				Group: FileOwnerGroup,
 			},
-			Compression: true,
 			Permissions: 0644,
 		},
 		{
