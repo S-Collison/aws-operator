@@ -37,7 +37,8 @@ func (c *CloudConfig) NewWorkerTemplate(ctx context.Context, customObject v1alph
 		params.RegistryDomain = c.registryDomain
 		params.SSOPublicKey = c.SSOPublicKey
 
-		params.Files, err = k8scloudconfig.RenderFiles(c.ignitionPath, params)
+		ignitionPath := k8scloudconfig.GetIgnitionPath(c.ignitionPath)
+		params.Files, err = k8scloudconfig.RenderFiles(ignitionPath, params)
 		if err != nil {
 			return "", microerror.Mask(err)
 		}
