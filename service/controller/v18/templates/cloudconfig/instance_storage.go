@@ -5,7 +5,7 @@ storage:
   filesystems:
     - name: ephemeral1
       mount:
-        device: /dev/xvdb
+        device: /dev/nvme0n1
         format: xfs
         wipeFilesystem: true
 `
