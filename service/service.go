@@ -134,7 +134,7 @@ func New(config Config) (*Service, error) {
 				SessionToken:    config.Viper.GetString(config.Flag.Service.AWS.HostAccessKey.Session),
 				Region:          config.Viper.GetString(config.Flag.Service.AWS.Region),
 			},
-			IgnitionPath:     config.Viper.GetString(config.Flag.Service.Guest.Ignition.IgnitionPath),
+			IgnitionPath:     config.Viper.GetString(config.Flag.Service.Guest.Ignition.Path),
 			IncludeTags:      config.Viper.GetBool(config.Flag.Service.AWS.IncludeTags),
 			InstallationName: config.Viper.GetString(config.Flag.Service.Installation.Name),
 			OIDC: controller.ClusterConfigOIDC{
