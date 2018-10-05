@@ -74,7 +74,7 @@ required = [
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]
-  branch = "yaml_tags"
+  branch = "fix_services"
   name = "github.com/giantswarm/k8scloudconfig"
 
 [[constraint]]

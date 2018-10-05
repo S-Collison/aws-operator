@@ -7,7 +7,6 @@ import (
 	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/aws-operator/service/controller/v18/encrypter"
-	_ "github.com/giantswarm/k8scloudconfig/v_4_0_0/files"
 )
 
 const (
